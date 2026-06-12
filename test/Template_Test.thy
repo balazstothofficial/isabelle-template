@@ -24,6 +24,7 @@ proof (intro allI impI)
   template_test \<open>
   fix x
   assume "P x"
+
   show "P x"
     sorry\<close>
   fix x
@@ -38,14 +39,17 @@ lemma "A \<and> A \<longrightarrow> A \<and> A \<and> A"
 proof (intro conjI impI)
   template_test \<open>
   assume "A \<and> A"
+
   show A
     sorry
 next
   assume "A \<and> A"
+
   show A
     sorry
 next
   assume "A \<and> A"
+
   show A
     sorry\<close>
   assume "A \<and> A"
@@ -63,6 +67,7 @@ proof (induct xs)
 next
   fix a xs
   assume "rev (rev xs) = xs"
+
   show "rev (rev (a # xs)) = a # xs"
     sorry\<close>
   show "rev (rev []) = []" by simp
@@ -93,6 +98,7 @@ proof (intro allI impI)
   assume
     "x < y" and
     "y < z"
+
   show "x < z"
     sorry\<close>
   fix x y :: nat
@@ -111,10 +117,26 @@ lemma "\<forall>x. rev [x] = [x]"
 proof (intro allI)
   template_test \<open>
   fix x :: 'a
+
   show "rev [x] = [x]"
     sorry\<close>
   fix x :: 'a
-  show "rev [x] = [x]" by simp
+
+  show "rev [x] = [x]"
+    by simp
+qed
+
+lemma "\<forall>x::nat. rev [x] = [x]"
+proof (intro allI)
+  template_test \<open>
+  fix x :: nat
+
+  show "rev [x] = [x]"
+    sorry\<close>
+  fix x :: nat
+
+  show "rev [x] = [x]"
+    by simp
 qed
 
 end
@@ -131,6 +153,7 @@ proof (intro allI impI)
   template_test \<open>
   fix x
   assume \<open>P x\<close>
+
   show \<open>P x\<close>
     sorry\<close>
   fix x
@@ -164,6 +187,7 @@ proof (intro allI impI)
   template_test \<open>
   fix x
   assume "P x"
+
   show "P x"
     sorry\<close>
   fix x
@@ -179,14 +203,17 @@ proof (intro conjI impI)
   template
   template_test \<open>
   assume "A \<and> A"
+
   show A
     sorry
 next
   assume "A \<and> A"
+
   show A
     sorry
 next
   assume "A \<and> A"
+
   show A
     sorry\<close>
   assume "A \<and> A"
@@ -205,6 +232,7 @@ proof (induct xs)
 next
   fix a xs
   assume "rev (rev xs) = xs"
+
   show "rev (rev (a # xs)) = a # xs"
     sorry\<close>
   show "rev (rev []) = []" by simp
@@ -237,6 +265,7 @@ proof (intro allI impI)
   assume
     "x < y" and
     "y < z"
+
   show "x < z"
     sorry\<close>
   fix x y :: nat
@@ -256,6 +285,7 @@ proof (intro allI)
   template
   template_test \<open>
   fix x :: 'a
+
   show "rev [x] = [x]"
     sorry\<close>
   fix x :: 'a

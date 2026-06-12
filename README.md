@@ -50,4 +50,6 @@ isabelle build -D .
 This builds both sessions: `Template` on `Pure` and `Template_Test` on `HOL`.
 
 Works with both Isabelle2025-2 and the current development version
-(repository version, June 2026).
+(tested with commit
+[1da23737c1b9](https://isabelle.in.tum.de/repos/isabelle/rev/1da23737c1b9),
+June 2026).

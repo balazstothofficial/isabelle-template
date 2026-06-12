@@ -83,7 +83,9 @@ fun print_skeleton ctxt indent (fixes, assms, concl) =
     val assms_s = print_clause "assume" (map (print_term ctxt') assms);
     val show_s = prefix ^ "show " ^ print_term ctxt' concl;
     val sorry_s = prefix ^ "  sorry";
-  in cat_lines (map_filter I [fixes_s, assms_s] @ [show_s, sorry_s]) end;
+    val context_lines = map_filter I [fixes_s, assms_s];
+    val blank_lines = if null context_lines then [] else [""];
+  in cat_lines (context_lines @ blank_lines @ [show_s, sorry_s]) end;
 
 
 (* template for all remaining subgoals *)
