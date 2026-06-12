@@ -110,7 +110,7 @@ fun template_text state =
   end;
 
 fun output_text s =
-  Output.information ("Proof template:\n" ^ Active.sendback_markup_command s);
+  Output.information ("Proof outline:\n" ^ Active.sendback_markup_command s);
 
 fun output_template state =
   (case template_text state of
