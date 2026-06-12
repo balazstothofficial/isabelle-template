@@ -26,6 +26,29 @@ val cartouches = Attrib.setup_config_bool \<^binding>\<open>template_cartouches\
 val auto = Attrib.setup_config_bool \<^binding>\<open>template_auto\<close> (K true);
 
 
+(* Isar keywords of the generated text *)
+
+local
+  val keywords = Thy_Header.get_keywords \<^theory>;
+in
+  fun minor_keyword s =
+    if Keyword.is_keyword keywords s then s
+    else raise Fail ("Bad outer syntax keyword " ^ quote s);
+end;
+
+val fix_command = fst \<^command_keyword>\<open>fix\<close>;
+val assume_command = fst \<^command_keyword>\<open>assume\<close>;
+val show_command = fst \<^command_keyword>\<open>show\<close>;
+val sorry_command = fst \<^command_keyword>\<open>sorry\<close>;
+val next_command = fst \<^command_keyword>\<open>next\<close>;
+val proof_command = fst \<^command_keyword>\<open>proof\<close>;
+val qed_command = fst \<^command_keyword>\<open>qed\<close>;
+
+val and_keyword = minor_keyword "and";
+val constraint_keyword = minor_keyword "::";
+val dash = "-";  (*method language syntax, cf. Parse.minus -- not an outer keyword*)
+
+
 (* plain source text for types and terms *)
 
 val clean_string_of = Protocol_Message.clean_output o Pretty.unformatted_string_of;
@@ -73,16 +96,17 @@ fun print_skeleton ctxt indent (fixes, assms, concl) =
       | print_clause keyword [s] = SOME (prefix ^ keyword ^ " " ^ s)
       | print_clause keyword ss =
           let val (init, last) = split_last (map (fn s => prefix ^ "  " ^ s) ss)
-          in SOME (cat_lines (prefix ^ keyword :: map (suffix " and") init @ [last])) end;
-    fun print_fix (x, T) = Thy_Header.print_name' ctxt' x ^ " :: " ^ print_typ ctxt' T;
+          in SOME (cat_lines (prefix ^ keyword :: map (suffix (" " ^ and_keyword)) init @ [last])) end;
+    fun print_fix (x, T) =
+      Thy_Header.print_name' ctxt' x ^ " " ^ constraint_keyword ^ " " ^ print_typ ctxt' T;
     val fix_items =
       if null fixes then []
       else if Config.get ctxt' show_types then map print_fix fixes
       else [implode_space (map (Thy_Header.print_name' ctxt' o #1) fixes)];
-    val fixes_s = print_clause "fix" fix_items;
-    val assms_s = print_clause "assume" (map (print_term ctxt') assms);
-    val show_s = prefix ^ "show " ^ print_term ctxt' concl;
-    val sorry_s = prefix ^ "  sorry";
+    val fixes_s = print_clause fix_command fix_items;
+    val assms_s = print_clause assume_command (map (print_term ctxt') assms);
+    val show_s = prefix ^ show_command ^ " " ^ print_term ctxt' concl;
+    val sorry_s = prefix ^ "  " ^ sorry_command;
     val context_lines = map_filter I [fixes_s, assms_s];
     val blank_lines = if null context_lines then [] else [""];
   in cat_lines (context_lines @ blank_lines @ [show_s, sorry_s]) end;
@@ -102,11 +126,11 @@ fun template_text state =
         [Printer.show_markup, Printer.show_type_emphasis,
           Printer.show_types, Printer.show_sorts, Thm.show_consts];
     val skeletons = map (print_skeleton print_ctxt 2 o dest_subgoal) (Thm.prems_of goal);
-    val body = cat_lines (separate "next" skeletons);
+    val body = cat_lines (separate next_command skeletons);
   in
     if null skeletons then NONE
     else if can Proof.assert_forward state then SOME body
-    else SOME (cat_lines ["proof -", body, "qed"])
+    else SOME (cat_lines [proof_command ^ " " ^ dash, body, qed_command])
   end;
 
 fun output_text s =
@@ -137,7 +161,6 @@ local
 
 val print_function_name = "proof_template";
 val base_thy = \<^theory>;
-val proof_command = fst \<^command_keyword>\<open>proof\<close>;
 
 in
 
