@@ -88,6 +88,9 @@ fun print_skeleton ctxt indent (fixes, assms, concl) =
 
 (* template for all remaining subgoals *)
 
+(*Inside a structured proof body the template is the block body itself;
+  otherwise (initial goal, apply scripts) it is wrapped in "proof -" ... "qed"
+  to remain valid Isar text.*)
 fun template_text state =
   let
     val {context = ctxt, goal, ...} = Proof.goal state;
@@ -97,9 +100,11 @@ fun template_text state =
         [Printer.show_markup, Printer.show_type_emphasis,
           Printer.show_types, Printer.show_sorts, Thm.show_consts];
     val skeletons = map (print_skeleton print_ctxt 2 o dest_subgoal) (Thm.prems_of goal);
+    val body = cat_lines (separate "next" skeletons);
   in
     if null skeletons then NONE
-    else SOME (cat_lines (separate "next" skeletons))
+    else if can Proof.assert_forward state then SOME body
+    else SOME (cat_lines ["proof -", body, "qed"])
   end;
 
 fun output_text s =

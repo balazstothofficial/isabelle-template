@@ -14,7 +14,9 @@ proof (intro allI impI)   (* output: fix x  /  assume "P x"  /  show "P x" sorry
 ```
 
 The `template` command prints the same template on demand anywhere inside a
-proof block, e.g. also after `apply` steps.
+proof. Outside a structured proof body (directly after the goal statement or
+after `apply` steps) the template is wrapped in `proof - ... qed`, so the
+inserted text is always valid Isar.
 
 ## Options
 

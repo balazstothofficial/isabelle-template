@@ -265,14 +265,28 @@ qed
 end
 
 
+subsection \<open>Outside a proof body the template is a complete proof block\<close>
+
+lemma "(0 :: nat) \<le> n"
+  template
+  template_test \<open>
+proof -
+  show "0 \<le> n"
+    sorry
+qed\<close>
+  by simp
+
+
 subsection \<open>Inside \<^theory_text>\<open>apply\<close> scripts: schematic variables become placeholders\<close>
 
 lemma "\<exists>x. x = (1 :: nat)"
   apply (rule exI)
   template
   template_test \<open>
+proof -
   show "_ = 1"
-    sorry\<close>
+    sorry
+qed\<close>
   apply (rule refl)
   done
 
